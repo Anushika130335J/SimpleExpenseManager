@@ -66,7 +66,7 @@ public interface AccountDAO {
     public void removeAccount(String accountNo) throws InvalidAccountException;
 
     /***
-     * Update the balance of the given account. The type of the expense is specified in order to determine which
+     * Update the BALANCE of the given account. The type of the expense is specified in order to determine which
      * action to be performed.
      * <p/>
      * The implementation has the flexibility to figure out how the updating operation is committed based on the type
@@ -74,7 +74,7 @@ public interface AccountDAO {
      *
      * @param accountNo   - account number of the respective account
      * @param expenseType - the type of the transaction
-     * @param amount      - amount involved
+     * @param amount      - AMOUNT involved
      * @throws InvalidAccountException - if the account number is invalid
      */
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException;

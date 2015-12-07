@@ -30,10 +30,10 @@ public interface TransactionDAO {
     /***
      * Log the transaction requested by the user.
      *
-     * @param date        - date of the transaction
+     * @param date        - DATE of the transaction
      * @param accountNo   - account number involved
      * @param expenseType - type of the expense
-     * @param amount      - amount involved
+     * @param amount      - AMOUNT involved
      */
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount);
 
@@ -45,7 +45,7 @@ public interface TransactionDAO {
     public List<Transaction> getAllTransactionLogs();
 
     /***
-     * Return a limited amount of transactions logged.
+     * Return a limited AMOUNT of transactions logged.
      *
      * @param limit - number of transactions to be returned
      * @return - a list of requested number of transactions

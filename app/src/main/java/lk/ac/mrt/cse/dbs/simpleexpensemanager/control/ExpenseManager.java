@@ -47,7 +47,7 @@ public abstract class ExpenseManager implements Serializable {
     }
 
     /***
-     * Update the account balance.
+     * Update the account BALANCE.
      *
      * @param accountNo
      * @param day

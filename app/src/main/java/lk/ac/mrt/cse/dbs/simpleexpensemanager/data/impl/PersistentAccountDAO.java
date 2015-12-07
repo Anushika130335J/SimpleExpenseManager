@@ -10,10 +10,11 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.db.DatabaseHelper;;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.database.DBhandler;;
 
 /**
- * Created by Lahiru Sandeepa on 12/7/2015.
+ *
+ * Created by Liyanage Anushika on 12/7/2015.
  */
 public class PersistentAccountDAO implements AccountDAO {
 
@@ -28,14 +29,14 @@ public class PersistentAccountDAO implements AccountDAO {
     public List<String> getAccountNumbersList() {
 
         //Open the database connection
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         if( handler == null){
             System.out.print("Damn");
         }
         SQLiteDatabase db = handler.getReadableDatabase();
 
         //Query to select all account numbers from the account table
-        String query = "SELECT "+ handler.accountNoNo+" FROM " + handler.accountTable+" ORDER BY " + handler.accountNoNo + " ASC";
+        String query = "SELECT "+ handler.ACCOUNT_NO +" FROM " + handler.ACCOUNTS_TABLE +" ORDER BY " + handler.ACCOUNT_NO + " ASC";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -44,7 +45,7 @@ public class PersistentAccountDAO implements AccountDAO {
         //Add account numbers to a list
         while (cursor.moveToNext())
         {
-            resultSet.add(cursor.getString(cursor.getColumnIndex(handler.accountNoNo)));
+            resultSet.add(cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_NO)));
         }
 
         cursor.close();
@@ -57,11 +58,11 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public List<Account> getAccountsList() {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getReadableDatabase();
 
         //Query to select all the details about all the accounts in the account table
-        String query = "SELECT * FROM " + handler.accountTable+" ORDER BY "+handler.accountNoNo+" ASC";
+        String query = "SELECT * FROM " + handler.ACCOUNTS_TABLE +" ORDER BY "+handler.ACCOUNT_NO +" ASC";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -70,10 +71,10 @@ public class PersistentAccountDAO implements AccountDAO {
         //Add account details to a list
         while (cursor.moveToNext())
         {
-            Account account = new Account(cursor.getString(cursor.getColumnIndex(handler.accountNoNo)),
-                    cursor.getString(cursor.getColumnIndex(handler.bankName)),
-                    cursor.getString(cursor.getColumnIndex(handler.accountHolderName)),
-                    cursor.getDouble(cursor.getColumnIndex(handler.balance)));
+            Account account = new Account(cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_NO)),
+                    cursor.getString(cursor.getColumnIndex(handler.BANK_NAME)),
+                    cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_HOLDER_NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(handler.BALANCE)));
 
             resultSet.add(account);
         }
@@ -88,11 +89,11 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public Account getAccount(String accountNo) throws InvalidAccountException {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getReadableDatabase();
 
         //Query to get details of the account specifiec by the account number
-        String query = "SELECT * FROM " + handler.accountTable + " WHERE " + handler.accountNoNo + " =  '" + accountNo + "'";
+        String query = "SELECT * FROM " + handler.ACCOUNTS_TABLE + " WHERE " + handler.ACCOUNT_NO + " =  '" + accountNo + "'";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -100,10 +101,10 @@ public class PersistentAccountDAO implements AccountDAO {
 
         //add the details to an account object
         if (cursor.moveToFirst()) {
-            account = new Account(cursor.getString(cursor.getColumnIndex(handler.accountNoNo)),
-                    cursor.getString(cursor.getColumnIndex(handler.bankName)),
-                    cursor.getString(cursor.getColumnIndex(handler.accountHolderName)),
-                    cursor.getDouble(cursor.getColumnIndex(handler.balance)));
+            account = new Account(cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_NO)),
+                    cursor.getString(cursor.getColumnIndex(handler.BANK_NAME)),
+                    cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_HOLDER_NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(handler.BALANCE)));
         }
         //If account is not found throw an exception
         else {
@@ -119,27 +120,27 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public void addAccount(Account account) {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getWritableDatabase();
 
         //Save account details to the account table
         ContentValues values = new ContentValues();
-        values.put(handler.accountNo, account.getAccountNo());
-        values.put(handler.bankName, account.getBankName());
-        values.put(handler.accountHolderName, account.getAccountHolderName());
-        values.put(handler.balance, account.getBalance());
+        values.put(handler.ACCOUNT_NO, account.getAccountNo());
+        values.put(handler.BANK_NAME, account.getBankName());
+        values.put(handler.ACCOUNT_HOLDER_NAME, account.getAccountHolderName());
+        values.put(handler.BALANCE, account.getBalance());
 
-        db.insert(handler.accountTable, null, values);
+        db.insert(handler.ACCOUNTS_TABLE, null, values);
 
     }
 
     @Override
     public void removeAccount(String accountNo) throws InvalidAccountException {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getWritableDatabase();
         //Query to delete a particular account from the account table
-        String query = "SELECT * FROM " + handler.accountTable + " WHERE " + handler.accountNoNo + " =  '" + accountNo + "'";
+        String query = "SELECT * FROM " + handler.ACCOUNTS_TABLE + " WHERE " + handler.ACCOUNT_NO + " =  '" + accountNo + "'";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -147,11 +148,11 @@ public class PersistentAccountDAO implements AccountDAO {
 
         //Delete the account if found in the table
         if (cursor.moveToFirst()) {
-            account = new Account(cursor.getString(cursor.getColumnIndex(handler.accountNoNo)),
-                    cursor.getString(cursor.getColumnIndex(handler.bankName)),
-                    cursor.getString(cursor.getColumnIndex(handler.accountHolderName)),
-                    cursor.getFloat(cursor.getColumnIndex(handler.balance)));
-            db.delete(handler.accountTable, handler.accountNo + " = ?", new String[] { accountNo });
+            account = new Account(cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_NO)),
+                    cursor.getString(cursor.getColumnIndex(handler.BANK_NAME)),
+                    cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_HOLDER_NAME)),
+                    cursor.getFloat(cursor.getColumnIndex(handler.BALANCE)));
+            db.delete(handler.ACCOUNTS_TABLE, handler.ACCOUNT_NO + " = ?", new String[] { accountNo });
             cursor.close();
 
         }
@@ -165,7 +166,7 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -173,22 +174,22 @@ public class PersistentAccountDAO implements AccountDAO {
         //Retrieve the account details of the selected account
         Account account = getAccount(accountNo);
 
-        //Update the balance if the account is found in the table
+        //Update the BALANCE if the account is found in the table
         if (account!=null) {
 
             double new_amount=0;
 
-            //Deduct the amount is it is an expense
+            //Deduct the AMOUNT is it is an expense
             if (expenseType.equals(ExpenseType.EXPENSE)) {
                 new_amount = account.getBalance() - amount;
             }
-            //Add the amount if it is an income
+            //Add the AMOUNT if it is an income
             else if (expenseType.equals(ExpenseType.INCOME)) {
                 new_amount = account.getBalance() + amount;
             }
 
-            //Query to update balance in the account table
-            String strSQL = "UPDATE "+handler.accountTable+" SET "+handler.balance+" = "+new_amount+" WHERE "+handler.accountNoNo+" = '"+ accountNo+"'";
+            //Query to update BALANCE in the account table
+            String strSQL = "UPDATE "+handler.ACCOUNTS_TABLE +" SET "+handler.BALANCE +" = "+new_amount+" WHERE "+handler.ACCOUNT_NO +" = '"+ accountNo+"'";
 
             db.execSQL(strSQL);
 

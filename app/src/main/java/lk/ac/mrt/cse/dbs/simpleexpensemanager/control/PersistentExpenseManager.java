@@ -7,8 +7,8 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentAccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentTransactionDAO;
 /**
- * Created by Lahiru Sandeepa on 12/7/2015.
- */
+ * Created by Liyanage Anushika on 12/7/2015.
+        */
 public class PersistentExpenseManager extends ExpenseManager{
 
     private Context context = null;

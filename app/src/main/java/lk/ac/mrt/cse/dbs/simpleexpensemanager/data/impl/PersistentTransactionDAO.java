@@ -14,11 +14,11 @@ import java.util.List;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.db.DatabaseHelper;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.database.DBhandler;
 
 
 /**
- * Created by Lahiru Sandeepa on 12/7/2015.
+ * Created by Liyanage Anushika on 12/7/2015.
  */
 public class PersistentTransactionDAO implements TransactionDAO {
 
@@ -32,17 +32,17 @@ public class PersistentTransactionDAO implements TransactionDAO {
     @Override
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount) {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getWritableDatabase();
 
         //Save transaction details to the transaction_log table
         ContentValues values = new ContentValues();
-        values.put(handler.accountNo, accountNo);
-        values.put(handler.date, convertDateToString(date));
-        values.put(handler.amount, amount);
-        values.put(handler.expenseType, expenseType.toString());
+        values.put(handler.ACCOUNT_NO, accountNo);
+        values.put(handler.DATE, convertDateToString(date));
+        values.put(handler.AMOUNT, amount);
+        values.put(handler.EXPENSE_TYPE, expenseType.toString());
 
-        db.insert(handler.transactionTable,null,values);
+        db.insert(handler.TRANSATIONS_TABLE,null,values);
     }
 
     @Override
@@ -53,15 +53,15 @@ public class PersistentTransactionDAO implements TransactionDAO {
     @Override
     public List<Transaction> getPaginatedTransactionLogs(int limit) {
 
-        DatabaseHelper handler = DatabaseHelper.getInstance(context);
+        DBhandler handler = DBhandler.getInstance(context);
         SQLiteDatabase db = handler.getWritableDatabase();
 
         //Query to get details of all the transactions
-        String query = "SELECT "+ handler.accountNo + ", " +
-                handler.date + ", " +
-                handler.expenseType+", " +
-                handler.amount +
-                " FROM " + handler.transactionTable + " ORDER BY " + handler.transaction_id + " DESC";
+        String query = "SELECT "+ handler.ACCOUNT_NO + ", " +
+                handler.DATE + ", " +
+                handler.EXPENSE_TYPE +", " +
+                handler.AMOUNT +
+                " FROM " + handler.TRANSATIONS_TABLE + " ORDER BY " + handler.transaction_id + " DESC";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -73,21 +73,21 @@ public class PersistentTransactionDAO implements TransactionDAO {
             try {
 
                 ExpenseType expenseType = null;
-                if (cursor.getString(cursor.getColumnIndex(handler.expenseType)).equals(ExpenseType.INCOME.toString())) {
+                if (cursor.getString(cursor.getColumnIndex(handler.EXPENSE_TYPE)).equals(ExpenseType.INCOME.toString())) {
                     expenseType = ExpenseType.INCOME;
                 }
                 else{
                     expenseType = ExpenseType.EXPENSE;
                 }
 
-                String dateString = cursor.getString(cursor.getColumnIndex(handler.date));
+                String dateString = cursor.getString(cursor.getColumnIndex(handler.DATE));
                 Date date = convertStringToDate(dateString);
 
                 Transaction tans = new Transaction(
                         date,
-                        cursor.getString(cursor.getColumnIndex(handler.accountNo)),
+                        cursor.getString(cursor.getColumnIndex(handler.ACCOUNT_NO)),
                         expenseType,
-                        cursor.getDouble(cursor.getColumnIndex(handler.amount)));
+                        cursor.getDouble(cursor.getColumnIndex(handler.AMOUNT)));
 
                 transactionLogs.add(tans);
 
@@ -101,7 +101,7 @@ public class PersistentTransactionDAO implements TransactionDAO {
         return transactionLogs;
     }
 
-    //Method to convert a date object to a string
+    //Method to convert a DATE object to a string
     public static String convertDateToString(Date date){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String dateString = dateFormat.format(date);
@@ -109,7 +109,7 @@ public class PersistentTransactionDAO implements TransactionDAO {
 
     }
 
-    //Method to convert a string to a date object
+    //Method to convert a string to a DATE object
     public static Date convertStringToDate(String date) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date strDate = dateFormat.parse(date);
